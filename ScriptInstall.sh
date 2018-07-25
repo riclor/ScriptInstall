@@ -35,21 +35,21 @@ echo "dnf install $packages -y">>$log_file
 dnf install $packages -y 2>>$log_file
 [[ $? -eq 0 ]] && echo "***Pas d'erreurs !!***">>$log_file 
 echo $sep>>$log_file
-config
+Config
 exit
 }
 
-debian_install (){
+DebianInstall (){
 echo "debian install"
 exit
 }
 
 #Config non testé
-config (){
-echo -e "Souhaitez vous lancer la configuration de la distribution $rouge$distrib$noir (y/N) ? "
+Config (){
+echo -e "Souhaitez vous lancer la Configuration de la distribution $rouge$distrib$noir (y/N) ? \c"
 read confirm
-[[ -z $confirm ]] && end
-#Lancement de la configuration si l'utilisateur à repondu OK 
+[[ -z $confirm ]] && End
+#Lancement de la Configuration si l'utilisateur à repondu OK 
 if [[ $confirm = "y" ]]
 	then 
 	echo "Configuration de vim ..."
@@ -57,7 +57,7 @@ if [[ $confirm = "y" ]]
 fi
 }
 
-end (){
+End (){
 echo $sep
 echo "Fin de traitement : $(date)"|tee $log_file
 echo "Les erreurs d'installation ont été stockés dans le fichier : /tmp/script_install.log "
@@ -88,15 +88,15 @@ while read distrib_file
  	[[ -n $release ]] && break
 	done < <(find /etc | grep .*release.*)
 #Si $distrib non trouvée dans les fichiers
-[[ -z $distrib ]] &&  echo "***Distribution inconnue***">>$log_file && distrib="non detectée" && echo $sep && end
+[[ -z $distrib ]] &&  echo "***Distribution inconnue***">>$log_file && distrib="non detectée" && echo $sep && End
 [[ -z $release ]] &&  echo "***Version inconnue***">>$log_file && release="non detectée" 
 #Menu d'installation
 echo -e "La distribution detectée est : $rouge$distrib$noir "
 echo -e "La version est $rouge$release$noir "
 echo $sep
-echo -e "Confirmez-vous l'installation et la configuration de la distribution $rouge$distrib$noir (y/N) ? \c"
+echo -e "Confirmez-vous l'installation et la Configuration de la distribution $rouge$distrib$noir (y/N) ? \c"
 read confirm
-[[ -z $confirm ]] && end
+[[ -z $confirm ]] && End
 #Lancement des fonctions d'installation en fonction de la variable $distrib
 if [[ $confirm = "y" ]]
 	then 
@@ -107,9 +107,9 @@ if [[ $confirm = "y" ]]
 	fi
 	if [[ $distrib = debian\|ubuntu ]]
 		then 
-		debian_install
+		DebianInstall
 	fi
 fi
-end
+End
 
  
