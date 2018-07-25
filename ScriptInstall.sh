@@ -1,14 +1,16 @@
 #!/bin/bash
 
 #Déclaration des variables
-log_file="/tmp/script_install.log"
+LogFile="/tmp/ScriptInstall.log"
 vert="\033[32m"
 rouge="\033[31m"
 noir="\033[0m"
 bleu="\033[34m"
 sep="-------------------------------------------------------------------------------------------------"
+SepLog=$($sep>>$LogFile)
 packages="keepass-2* openssh-server redshift libreoffice firefox tilda clementine qbittorrent vlc mpv vim thunderbird fail2ban calibre"
 ad_packages="virtualbox"
+
 
 #Desaffection de la variable $distrib
 unset distrib
@@ -22,19 +24,25 @@ FedoraInstall (){
 #Installation des packets et inscriptions des erreurs dans un fichier log
 [[ -d /tmp ]] || mkdir /tmp
 #Installation des repo rpm fusion free et non-free
-wget -P /tmp https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$release.noarch.rpm 
-dnf localinstall /tmp/rpmfusion-free-release-$release.noarch.rpm
-wget -P /tmp https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$release.noarch.rpm
+echo "wget -P /tmp https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$release.noarch.rpm">>$LogFile
+wget -P /tmp https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$release.noarch.rpm 2>>$LogFile 
+echo "dnf localinstall /tmp/rpmfusion-free-release-$release.noarch.rpm">>$LogFile
+dnf localinstall /tmp/rpmfusion-free-release-$release.noarch.rpm 2>>$LogFile
+IfNoError
+echo $SepLog
+echo "wget -P /tmp https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$release.noarch.rpm">>$LogFile
+wget -P /tmp https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$release.noarch.rpm 2>>$LogFile
+echo "dnf localinstall /tmp/rpmfusion-nonfree-release-$release.noarch.rpm">>$LogFile
 dnf localinstall /tmp/rpmfusion-nonfree-release-$release.noarch.rpm
+IfNoError
+echo $SepLog
 #Mise à jour et installation des paquets
-echo "dnf update -y">>$log_file
-dnf update -y 2>>$log_file
-[[ $? -eq 0 ]] && echo "***Pas d'erreurs !!***">>$log_file 
-echo $sep>>$log_file
-echo "dnf install $packages -y">>$log_file
-dnf install $packages -y 2>>$log_file
-[[ $? -eq 0 ]] && echo "***Pas d'erreurs !!***">>$log_file 
-echo $sep>>$log_file
+echo "dnf update -y">>$LogFile
+dnf update -y 2>>$LogFile
+IfNoError
+echo "dnf install $packages -y">>$LogFile
+dnf install $packages -y 2>>$LogFile
+IfNoError
 Config
 exit
 }
@@ -57,9 +65,15 @@ if [[ $confirm = "y" ]]
 fi
 }
 
+IfNoError(){
+echo " ">>$LogFile
+[[ $? -eq 0 ]] && echo "***Pas d'erreurs !!***">>$LogFile
+echo $sep>>$LogFile
+}
+
 End (){
 echo $sep
-echo "Fin de traitement : $(date)"|tee $log_file
+echo "Fin de traitement : $(date)"|tee --append $LogFile
 echo "Les erreurs d'installation ont été stockés dans le fichier : /tmp/script_install.log "
 echo $sep
 exit
@@ -71,7 +85,7 @@ exit
 clear
 echo $sep
 #Création du fichier de logs
-echo "Début de traitement : $(date)"|tee $log_file
+echo "Début de traitement : $(date)"|tee $LogFile
 echo $sep
 echo "Detection du système d'exploitation"
 echo $sep
@@ -88,8 +102,8 @@ while read distrib_file
  	[[ -n $release ]] && break
 	done < <(find /etc | grep .*release.*)
 #Si $distrib non trouvée dans les fichiers
-[[ -z $distrib ]] &&  echo "***Distribution inconnue***">>$log_file && distrib="non detectée" && echo $sep && End
-[[ -z $release ]] &&  echo "***Version inconnue***">>$log_file && release="non detectée" 
+[[ -z $distrib ]] &&  echo "***Distribution inconnue***">>$LogFile && distrib="non detectée" && echo $sep && End
+[[ -z $release ]] &&  echo "***Version inconnue***">>$LogFile && release="non detectée" 
 #Menu d'installation
 echo -e "La distribution detectée est : $rouge$distrib$noir "
 echo -e "La version est $rouge$release$noir "
