@@ -8,7 +8,7 @@ noir="\033[0m"
 bleu="\033[34m"
 sep="-------------------------------------------------------------------------------------------------"
 SepLog=$($sep>>$LogFile)
-packages="keepass-2* openssh-server redshift libreoffice firefox tilda clementine qbittorrent vlc mpv vim thunderbird fail2ban calibre"
+packages="gvim keepass-2* openssh-server redshift libreoffice firefox tilda clementine qbittorrent vlc mpv thunderbird fail2ban calibre flatpak"
 ad_packages="virtualbox"
 
 
@@ -60,8 +60,13 @@ read confirm
 #Lancement de la Configuration si l'utilisateur à repondu OK 
 if [[ $confirm = "y" ]]
 	then 
+	#Configuration de vim
 	echo "Configuration de vim ..."
-	echo "set number\nsource $VIMRUNTIME/mswin.vim\nbehave mswin\nsyntax on" >> /etc/vimrc
+	echo "behave mswin" >> /etc/vimrc
+	echo "syntax on" >> /etc/vimrc
+	echo "set number" >> /etc/vimrc
+	#Activer le surlignage
+	#echo "source $VIMRUNTIME/mswin.vim" >> /etc/vimrc
 fi
 }
 
